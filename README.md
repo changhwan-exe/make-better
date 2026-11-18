@@ -1,62 +1,62 @@
-**English** | [한국어](README.ko.md)
+**한국어** | [English](README.en.md)
 
-# make-better — a Claude Code skill for vague "make it better" requests
+# make-better — 막연한 「좋게 만들어 줘」 를 처리하는 Claude Code 스킬
 
-The procedure Claude follows when asked to improve something **without being told what to change or how** — "I don't like it", "something feels off", "polish this up".
+「마음에 안 들어」 「뭔가 어색해」 「좀 다듬어 줘」 처럼 **무엇을 어떻게 바꿀지 말하지 않는** 개선 요청을 받았을 때 Claude 가 따르는 절차.
 
-People often can't say *what* is wrong, but they can pick *which one is better*.
-So instead of interrogating, Claude looks for itself, diagnoses, shows **several options that differ in direction, as real things to look at**, and lets the person choose. It never decides taste on their behalf.
+사람은 「뭐가 문제인지」 는 말하지 못해도 「이게 낫다」 는 고를 수 있다.
+그래서 Claude 는 이유를 캐묻지 않고, 직접 보고 진단해서 **방향이 다른 안 여러 개를 실물로** 보여 주고, 사람이 고르게 한다. 취향은 대신 정하지 않는다.
 
-Works for any target: UI · mockups · writing · design docs · code structure · balance numbers · motion · sound.
+UI · 시안 · 글 · 기획서 · 코드 구조 · 밸런스 · 연출 · 소리 등 대상을 가리지 않는다.
 
-## Flow
+## 흐름
 
 ```
- ① Look           the real thing, not memory or guesses — screenshot the screen, read the whole text, read the code
- ② Reference      don't invent "good" — past feedback · confirmed docs · parts the person was happy with · given material
-                  none? → run explore-reference to find references and build one
- ③ Diagnose       3–7 pointable issues, each "what · which part of the reference it breaks"
- ④ 2–3 options    different directions (a recolor or a stronger/weaker version counts as the same one), shown as real artifacts
- ⑤ Self-filter    does it fix the diagnosis · did it drift to a bland average · does it stay in scope + mark one recommendation
- ⑥ Stop           nothing is changed before the pick — "#2" or "#1 but lighter" is enough of an answer
- ⑦ Narrow down    apply the pick → fix only what each one-line note touches → look again → save revealed taste to memory
+ ① 직접 본다     기억 · 추측 말고 실물 — 화면을 찍고, 전문을 읽고, 코드를 읽는다
+ ② 기준점        「좋다」 를 지어내지 않는다 — 과거 피드백 · 확정 문서 · 만족한 다른 부분 · 받은 자료
+                 없으면 → explore-reference 로 레퍼런스를 찾아 기준점을 만든다
+ ③ 진단          가리킬 수 있는 어색한 점 3~7개, 각각 「무엇이 · 기준점의 무엇과 어긋나서」
+ ④ 안 2~3개      방향이 다른 안 (색만 · 강도만 다른 건 하나로 친다), 볼 수 있는 실물로
+ ⑤ 스스로 거름   진단을 고치는가 · 무난한 평균으로 수렴하지 않았나 · 범위를 넘지 않았나 + 추천 하나
+ ⑥ 멈춘다        고르기 전에는 원본을 고치지 않는다 — 「2번」 「1번인데 더 가볍게」 면 충분
+ ⑦ 좁혀 간다     고른 안 반영 → 한 줄 피드백마다 그 부분만 → 다시 보고 확인 → 드러난 취향은 메모리에
 ```
 
-| Target | How options are shown |
+| 대상 | 안을 보여 주는 형식 |
 | --- | --- |
-| Screen · UI · motion | One page with the current screen and the options side by side |
-| Writing · docs | The same passage rewritten per option |
-| Code structure | A draft diff of one representative file |
-| Numbers · balance | Current vs. per-option values in one table + the difference in outcome |
-| Sound · SFX | A loudness-matched listening page + measured comparison |
+| 화면 · UI · 연출 | 현재 화면과 안들을 나란히 놓은 시안 한 페이지 |
+| 글 · 문서 | 같은 대목을 안마다 다시 쓴 견본 |
+| 코드 구조 | 대표 파일 하나의 변경 초안 (diff) |
+| 수치 · 밸런스 | 현재 값 · 안별 값을 나란히 놓은 표 + 결과 차이 |
+| 소리 · 효과음 | 음량을 맞춘 청취 페이지 + 수치 비교 |
 
-## Bundled skill — explore-reference
+## 함께 들어 있는 스킬 — explore-reference
 
-Called from step ② when there's no reference point. Also usable on its own: "find me references", "what has this kind of feel?".
+make-better ② 에서 기준점이 없을 때 부르는 스킬. 단독으로 「레퍼런스 찾아 줘」 「이런 느낌 뭐 있어?」 에도 쓴다.
 
-Gathers wide (8–12 items, half deliberately scattered in direction) → takes likes/dislikes as numbers only → reads what the likes share, narrows, widens again — until "that's it", then sums up a **reference board**. It never makes options or edits the original.
+넓게 모아 보여 주고(8~12개, 절반은 일부러 방향을 흩어 놓음) → 좋음 · 싫음을 번호로만 받고 → 공통점을 읽어 좁히고 다시 넓히기를 반복해, 「이거다」 가 나오면 **레퍼런스 보드**로 정리한다. 안을 만들거나 원본을 고치지 않는다.
 
-## Install
+## 설치
 
 ```bash
 git clone https://github.com/changhwan-exe/make-better.git
 cd make-better
-bash install.sh                     # ~/.claude/skills/ — for all your projects
-bash install.sh /path/to/your-repo  # <repo>/.claude/skills/ — that repo only, shared with the team
+bash install.sh                  # ~/.claude/skills/ — 내 모든 프로젝트에서
+bash install.sh /path/to/저장소   # <저장소>/.claude/skills/ — 그 저장소에서만, 팀과 공유
 ```
 
-Or by hand: copy `files/make-better/` and `files/explore-reference/` under `~/.claude/skills/` or `<repo>/.claude/skills/`.
+손으로 넣어도 된다: `files/make-better/` · `files/explore-reference/` 폴더를 `~/.claude/skills/` 또는 `<저장소>/.claude/skills/` 아래에 복사한다.
 
-## Usage
+## 쓰는 법
 
-No need to call it. Say "I don't like this screen" or "polish this paragraph" and Claude reads the skill from its description. To call it directly: `/make-better` · `/explore-reference`.
+따로 부를 필요 없다. 「이 화면 마음에 안 들어」 「이 글 좀 다듬어 줘」 처럼 말하면 Claude 가 스킬 설명을 보고 먼저 읽는다. 직접 부르려면 `/make-better` · `/explore-reference`.
 
-- Screens, mockups and reference boards assume Claude can show an HTML page (an artifact). Where it can't, files or tables stand in.
-- Claude can't hear. With a sound-analysis tool (MCP · CLI) it speaks only from the tool's results; without one it asks you to listen.
-- Project instructions (`CLAUDE.md`, code rules, branch rules) are never skipped — the skill runs inside them.
+- 화면 · 시안 · 레퍼런스 보드는 HTML 페이지(아티팩트)로 보여 주는 것을 전제로 쓰였다. 페이지를 못 만드는 환경이면 파일 · 표로 대신한다.
+- 소리는 Claude 가 직접 듣지 못한다. 소리 분석 도구(MCP · CLI)가 있으면 그 결과로만 말하고, 없으면 들어 봐 달라고 한다.
+- 프로젝트 지침(`CLAUDE.md` · 코드 규칙 · 브랜치 규칙)을 건너뛰지 않는다 — 스킬은 그 안에서 돈다.
 
-> **Note:** the skill bodies are written in Korean. The procedure works the same in an English conversation.
+> 스킬 본문은 한국어로 쓰여 있다. 영어로 대화해도 절차는 같게 돈다.
 
-## License
+## 라이선스
 
 [MIT](LICENSE)
